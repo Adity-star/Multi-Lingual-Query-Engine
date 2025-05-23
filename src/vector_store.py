@@ -66,5 +66,4 @@ def setup_vector_store(logger: logging.Logger):
 
     return vector_store
 
-result = setup_vector_store(logging.getLogger(__name__))
 
