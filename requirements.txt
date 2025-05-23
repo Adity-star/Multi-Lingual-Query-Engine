@@ -7,4 +7,4 @@ langchain-community
 pydantic >=2
 typing_extensions
 python-dotenv
-
+langchain-google-genai

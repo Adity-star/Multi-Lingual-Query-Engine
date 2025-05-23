@@ -1,12 +1,12 @@
 import logging 
 import os
 
-from bs4 import BeautifulSoup as soup
+from bs4 import BeautifulSoup as Soup
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.recursive_url_loader import RecursiveUrlLoader
 from langchain_community.vectorstores import FAISS
-from langchain_groq import Embeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 
 def setup_vector_store(logger: logging.Logger):
@@ -21,7 +21,7 @@ def setup_vector_store(logger: logging.Logger):
         logger.info("Loading vector store from disk...")
         vector_store = FAISS.load_local(
             vector_store_dir,
-            Embeddings(),
+            GoogleGenerativeAIEmbeddings(),
             allow_dangerous_deserialization=True,
         )
 
@@ -53,7 +53,7 @@ def setup_vector_store(logger: logging.Logger):
                 )
 
         # Compute embeddings and create vector store
-        embedding_model = OpenAIEmbeddings()
+        embedding_model = GoogleGenerativeAIEmbeddings()
         vector_store = FAISS.from_texts(
             [doc["content"] for doc in documents],
             embedding_model,
@@ -65,3 +65,6 @@ def setup_vector_store(logger: logging.Logger):
         logger.info("Vector store created and saved to disk.")
 
     return vector_store
+
+result = setup_vector_store(logging.getLogger(__name__))
+
