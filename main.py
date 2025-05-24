@@ -30,12 +30,12 @@ def main():
     load_dotenv()
 
     # Access secrets using os.getenv
-    os.environ["GOOGLE_API_KEY"] = os.getenv("AIzaSyA-TbnNtM0ac5AT9SHRn7CHXi6tpNVyr2U")
+    os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 
     # Setup database and vector store
-    conn = setup_database()
+    conn = setup_database(_logger)
     cursor = conn.cursor()
-    vector_store = setup_vector_store()
+    vector_store = setup_vector_store(_logger)
 
     # Load the model
     model_uri = f"models:/{REGISTERED_MODEL_NAME}@{MODEL_ALIAS}"

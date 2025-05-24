@@ -14,10 +14,10 @@ mlflow.set_experiment(EXPERIMENT_NAME)
 
 with mlflow.start_run():
     logged_model_info = mlflow.pyfunc.log_model(
-        python_model="sql_model.py",
+        python_model="src/sql_model.py",
         artifact_path="sql_generator",
         registered_model_name=REGISTERED_MODEL_NAME,
-        code_paths=["workflow.py"],
+        code_paths=["src/workflow.py"],
     )
 
 client.set_registered_model_alias(

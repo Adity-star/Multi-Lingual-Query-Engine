@@ -21,7 +21,7 @@ def setup_vector_store(logger: logging.Logger):
         logger.info("Loading vector store from disk...")
         vector_store = FAISS.load_local(
             vector_store_dir,
-            GoogleGenerativeAIEmbeddings(),
+            GoogleGenerativeAIEmbeddings(model="models/embedding-001"),
             allow_dangerous_deserialization=True,
         )
 
@@ -53,7 +53,7 @@ def setup_vector_store(logger: logging.Logger):
                 )
 
         # Compute embeddings and create vector store
-        embedding_model = GoogleGenerativeAIEmbeddings()
+        embedding_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         vector_store = FAISS.from_texts(
             [doc["content"] for doc in documents],
             embedding_model,

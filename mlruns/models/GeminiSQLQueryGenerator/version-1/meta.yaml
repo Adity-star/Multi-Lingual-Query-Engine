@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1748094501716
+current_stage: None
+description: ''
+last_updated_timestamp: 1748094501716
+name: GeminiSQLQueryGenerator
+run_id: 90eef72dedaa4a08a021c4cae20f1d60
+run_link: ''
+source: mlflow-artifacts:/290108310450494117/90eef72dedaa4a08a021c4cae20f1d60/artifacts/sql_generator
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/290108310450494117/90eef72dedaa4a08a021c4cae20f1d60/artifacts/sql_generator
+user_id: null
+version: 1
