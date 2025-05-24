@@ -6,6 +6,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import END, START, StateGraph
 from sql_generation import get_sql_gen_chain
 from typing_extensions import TypedDict
+from langchain_core.messages import HumanMessage
+
 
 
 # Initialize the logger
@@ -37,7 +39,7 @@ def get_workflow(conn, cursor, vector_store):
     sql_gen_chain = get_sql_gen_chain()
 
     # Initialize OpenAI LLM for translation and safety checks
-    llm = ChatGoogleGenerativeAI(temperature=0, model="gpt-4o-mini")
+    llm = ChatGoogleGenerativeAI(temperature=0, model="gemini-2.0-flash")
 
     def translate_input(state: GraphState) -> GraphState:
         """
@@ -63,7 +65,7 @@ def get_workflow(conn, cursor, vector_store):
         """
 
         # Call the LLM to translate the text
-        translated_response = llm.invoke(translation_prompt)
+        translated_response = llm.invoke([HumanMessage(content=translation_prompt)])
         translated_text = translated_response.content.strip()  # Access the 'content' attribute and strip any extra spaces
 
         # Update state with the translated input
@@ -108,7 +110,7 @@ def get_workflow(conn, cursor, vector_store):
             Input:
             {translated_input}
             """
-            safety_invoke = llm.invoke(safety_prompt)
+            safety_invoke = llm.invoke([HumanMessage(content=safety_prompt)])
             safety_response = safety_invoke.content.strip().lower()  # Access the 'content' attribute and strip any extra spaces
 
             if safety_response == "safe":
@@ -146,7 +148,7 @@ def get_workflow(conn, cursor, vector_store):
         #Loop through each table and retrive column info.
         for table_name_tuple in tables:
             table_name = table_name_tuple[0]
-            cursor.execute(f"PARAGRAMETERS {table_name};")
+            cursor.execute(f"PRAGMA table_info({table_name});")
             columns = cursor.fetchall()
 
             #Format colum definitions
@@ -181,7 +183,7 @@ def get_workflow(conn, cursor, vector_store):
         error = "no"
         database_schema = state["database_schema"]  # Get the schema from the state
         
-            # Use the LLM to determine if the input is relevant to the database schema
+        # Use the LLM to determine if the input is relevant to the database schema
         context_prompt = f"""
         Determine whether the following user input is a question that can be answered using the database schema provided below.
 
@@ -195,11 +197,7 @@ def get_workflow(conn, cursor, vector_store):
         """
 
         # Call the LLM for context check
-        llm_invoke = llm.invoke(context_prompt)
-        llm_response = llm_invoke.content.strip().lower()  # Access the 'content' attribute and strip any extra spaces and lower case
-
-        # Call the LLM for context check
-        llm_invoke = llm.invoke(context_prompt)
+        llm_invoke = llm.invoke([HumanMessage(content=context_prompt)])
         llm_response = llm_invoke.content.strip().lower()  # Access the 'content' attribute and strip any extra spaces and lower case
 
         # Process the response from the LLM
@@ -241,20 +239,19 @@ def get_workflow(conn, cursor, vector_store):
         retrieved_docs = "\n\n".join([doc.page_content for doc in docs])
 
         # Generate the SQL query using the generation chain
-        sql_solution = sql_gen_chain.invoke(
-            {
-                "retrieved_docs": retrieved_docs,
-                "database_schema": database_schema,
-                "message": [("user", translated_input)],
-            }
-        )
+        input_data = {
+            "retrieved_docs": retrieved_docs,
+            "database_schema": database_schema,
+            "message": translated_input,
+        }
+        
+        sql_solution = sql_gen_chain.invoke(input_data)
 
-        # Save the generated SQL query inn state
-
+        # Save the generated SQL query in state
         messages += [
             (
-            "assistant",
-            f"{sql_solution.description}\nSQL Query:\n{sql_solution.sql_code}",
+                "assistant",
+                f"{sql_solution.description}\nSQL Query:\n{sql_solution.sql_code}",
             ),
         ]
         iterations += 1
@@ -283,8 +280,8 @@ def get_workflow(conn, cursor, vector_store):
         _logger.info("Performing post-safety check on the generated SQL query.")
 
         # Retrieve the generated SQL query from the state
-        sql_solution = state.get("generation", {})
-        sql_query = sql_solution.get("sql_code", "").strip()
+        sql_solution = state.get("generation")
+        sql_query = sql_solution.sql_code.strip() if sql_solution else ""
         messages = state["messages"]
         error = "no"
 

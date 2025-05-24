@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage
 
 
 class SQLQuery(BaseModel):
@@ -18,11 +19,11 @@ def get_sql_gen_chain():
 Answer the user's question based on the provided documentation snippets and the database schema provided below. Ensure any SQL query you provide is valid and executable. \n
 Structure your answer with a description of the query, followed by the SQL code block. Here are the documentation snippets:\n{retrieved_docs}\n\nDatabase Schema:\n{database_schema}""",
             ),
-            ("placeholder", "{messages}"),
+            ("human", "{message}"),
         ]
     )
 
-    llm = ChatGoogleGenerativeAI(temperature=0, model='gemini-1.5-turbo')
+    llm = ChatGoogleGenerativeAI(temperature=0, model='gemini-2.0-flash')
 
     sql_gen_chain = sql_gen_prompt | llm.with_structured_output(SQLQuery)
 
