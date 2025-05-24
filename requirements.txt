@@ -9,3 +9,6 @@ typing_extensions
 python-dotenv
 langchain-google-genai
 mlflow
+fastapi
+uvicorn
+python-multipart

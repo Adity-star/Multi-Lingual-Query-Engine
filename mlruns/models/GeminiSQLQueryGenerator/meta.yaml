@@ -1,6 +1,6 @@
 aliases:
-  gemini_sql_llm: '1'
+  gemini_sql_llm: '12'
 creation_timestamp: 1748094501628
 description: ''
-last_updated_timestamp: 1748094501986
+last_updated_timestamp: 1748106169642
 name: GeminiSQLQueryGenerator
