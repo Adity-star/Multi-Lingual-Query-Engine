@@ -1,0 +1,18 @@
+artifact_path: sql_generator
+flavors:
+  python_function:
+    cloudpickle_version: 3.1.1
+    code: code
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pyfunc.loaders.code_model
+    model_code_path: C:\Users\Administrator\OneDrive\Desktop\Multi-Lingual-Query-Engine\src\sql_model.py
+    python_version: 3.13.2
+    streamable: false
+mlflow_version: 2.22.0
+model_size_bytes: 349
+model_uuid: 67176356e33c4ba7a841caf9b7915819
+prompts: null
+run_id: 90eef72dedaa4a08a021c4cae20f1d60
+utc_time_created: '2025-05-24 13:47:56.485550'

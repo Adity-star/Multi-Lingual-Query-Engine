@@ -1,0 +1,6 @@
+aliases:
+  gemini_sql_llm: '1'
+creation_timestamp: 1748094501628
+description: ''
+last_updated_timestamp: 1748094501986
+name: GeminiSQLQueryGenerator
